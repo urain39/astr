@@ -22,6 +22,9 @@ def extract(source: str) -> List[Token]:
     stringMap: Dict[str, int] = {}  # [string] -> stringId
     stringList: List[str] = []  # [stringId] -> string
 
+    # 转义换行符（Python3会处理换行符问题的）
+    source = source.replace('\n', '\\n')
+
     s = ''
     i = 0  # 当前
     j = 0  # 预查

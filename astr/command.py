@@ -48,7 +48,8 @@ def extract(config: ConfigParser) -> None:
                     cache_file.write_text(json.dumps(cache), encoding='utf-8')
 
                     (extract_dir / (i.name + '.txt')).write_text(
-                        '\n\n\n'.join(token[1]), encoding='utf-8'
+                        # 排序后方便翻译
+                        '\n\n\n'.join(sorted(token[1])), encoding='utf-8'
                     )
 
 
