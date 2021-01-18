@@ -29,7 +29,7 @@ def extract(config: ConfigParser) -> None:
         if i.is_file():
             text = i.read_text(encoding=enc)
 
-            cache_file = (cache_dir / (str(i) + '.json'))
+            cache_file = cache_dir / (str(i) + '.json')
             # 注意：这里cache文件可能有父目录
             cache_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -48,8 +48,8 @@ def extract(config: ConfigParser) -> None:
 
                 database.append(str(i))
 
-            database_file = extract_dir / 'database.json'
-            database_file.write_text(json.dumps(database))
+    database_file = extract_dir / 'database.json'
+    database_file.write_text(json.dumps(database))
 
 def inject(config: ConfigParser) -> None:
     inc = config.get(_CONST_MAIN, _CONST_INCLUDE)
@@ -75,7 +75,7 @@ def inject(config: ConfigParser) -> None:
             for t in unmatchedList:
                 print(f'    unmatched: {t}')
 
-        cache_file = (cache_dir / (str(i) + '.json'))
+        cache_file = cache_dir / (str(i) + '.json')
 
         text = _inject(json.loads(cache_file.read_text()), dictionary)
         Path(i).write_text(text, encoding=enc)
