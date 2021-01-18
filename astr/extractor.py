@@ -1,6 +1,6 @@
 import re
 
-from typing import List, Dict
+from typing import Dict, List, Tuple
 from .anotations import Token
 from .exceptions import ExtractorError
 
@@ -16,13 +16,13 @@ TYPE_REFERENCE = 1
 TYPE_OTHERS = 2
 
 
-def extract(source: str) -> List[Token]:
+def extract(source: str) -> Tuple[List[str], List[Token]]:
     tokens: List[Token] = []
     stringId: int = 0
     stringMap: Dict[str, int] = {}  # [string] -> stringId
     stringList: List[str] = []  # [stringId] -> string
 
-    # 转义换行符（Python3会处理换行符问题的）
+    # 转义换行符（Python3会处理换行符兼容性问题的）
     source = source.replace('\n', '\\n')
 
     s = ''
@@ -70,4 +70,4 @@ def extract(source: str) -> List[Token]:
     if stringId:  # 如果有字符串
         tokens.insert(0, (TYPE_DEFINE, stringList))
 
-    return tokens
+    return stringList, tokens
