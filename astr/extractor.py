@@ -18,9 +18,9 @@ TYPE_OTHERS = 2
 
 def extract(source: str) -> Tuple[List[str], List[Token]]:
     tokens: List[Token] = []
-    stringId: int = 0
-    stringMap: Dict[str, int] = {}  # [string] -> stringId
-    stringList: List[str] = []  # [stringId] -> string
+    string_id: int = 0
+    string_map: Dict[str, int] = {}  # [string] -> string_id
+    string_list: List[str] = []  # [string_id] -> string
 
     # 转义换行符（Python3会处理换行符兼容性问题的）
     source = source.replace('\n', '\\n')
@@ -60,14 +60,14 @@ def extract(source: str) -> Tuple[List[str], List[Token]]:
         if s \
                 and not _RE_WHITESPACE.match(s) \
                 and not _RE_ASCII.match(s):
-            if not s in stringMap:  # 字符串第一次出现
-                stringMap[s] = stringId
-                stringList.append(s)
-                stringId += 1
+            if s not in string_map:  # 字符串第一次出现
+                string_map[s] = string_id
+                string_list.append(s)
+                string_id += 1
 
-            tokens.append((TYPE_REFERENCE, stringMap[s]))
+            tokens.append((TYPE_REFERENCE, string_map[s]))
 
-    if stringId:  # 如果有字符串
-        tokens.insert(0, (TYPE_DEFINE, stringList))
+    if string_id:  # 如果有字符串
+        tokens.insert(0, (TYPE_DEFINE, string_list))
 
-    return stringList, tokens
+    return string_list, tokens

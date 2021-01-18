@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union, Literal
+from typing import Dict, List, Tuple, Union
 
 # 0 - TYPE_DEFINE
 # 1 - TYPE_REFERENCE

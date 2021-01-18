@@ -1,36 +1,7 @@
-from typing import List, Tuple, Union, cast
+from typing import List, Union, cast
 from .anotations import Dictionary, Token, DefineToken, ReferenceToken, NormalToken
 from .exceptions import InjectorError
 
-
-def parseDictionary(source: str) -> Tuple[List[str], Dictionary]:
-    dictionary = {}
-    unmatchedList = []
-    lines = source.split('\n')
-
-    i = 0
-    l = len(lines)
-    while i < l:
-        line = lines[i]
-
-        if line:
-            key = line
-            i += 1
-
-            if i < l:
-                line = lines[i]
-            else:
-                unmatchedList.append(key)
-                break
-
-            if line:
-                dictionary[key] = line
-            else:
-                unmatchedList.append(key)
-
-        i += 1
-
-    return unmatchedList, dictionary
 
 def inject(tokens: List[Token], dictionary: Dictionary) -> str:
     buffer: List[str] = []
@@ -38,12 +9,12 @@ def inject(tokens: List[Token], dictionary: Dictionary) -> str:
     if not tokens:
         return ''
 
-    defineToken = tokens[0]
+    define_token = tokens[0]
 
-    if defineToken[0] != 0:
+    if define_token[0] != 0:
         raise InjectorError('first token is not <type_define>')
 
-    stringList = cast(DefineToken, defineToken)[1]
+    string_list = cast(DefineToken, define_token)[1]
     tokens = tokens[1:]
 
     value: Union[int, str]
@@ -52,9 +23,10 @@ def inject(tokens: List[Token], dictionary: Dictionary) -> str:
 
         if type_ == 0:
             raise InjectorError('unexpected token <type_define>')
-        elif type_ == 1:
+
+        if type_ == 1:
             value = cast(ReferenceToken, token)[1]
-            string = stringList[value]
+            string = string_list[value]
             buffer.append('"' + (dictionary.get(string) or string) + '"')
         elif type_ == 2:
             value = cast(NormalToken, token)[1]
