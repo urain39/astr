@@ -2,7 +2,7 @@ import json
 
 from configparser import ConfigParser
 from pathlib import Path
-from typing import List
+from typing import Dict
 from .dictionary import parse_dictionary
 from .extractor import extract as _extract
 from .injector import inject as _inject
@@ -23,32 +23,51 @@ def extract(config: ConfigParser) -> None:
     extract_dir = work_dir / dir_
     cache_dir = extract_dir / _CONST_ASTRCACHE
 
-    database: List[str] = []
+    database: Dict[str, float] = {}
     for i in work_dir.glob(inc):
         if i.is_file():
             text = i.read_text(encoding=enc)
 
             cache_file = cache_dir / (str(i) + '.json')
-            # 注意：这里cache文件可能有父目录
-            cache_file.parent.mkdir(parents=True, exist_ok=True)
+            text_file = extract_dir / (str(i) + '.txt')
 
             string_list, tokens = _extract(text)
 
             # 仅缓存含有字符串的脚本
             if string_list:
+                # 注意：这里cache文件可能有父目录
+                cache_file.parent.mkdir(parents=True, exist_ok=True)
                 cache_file.write_text(json.dumps(tokens), encoding=enc)
 
-                text_file = extract_dir / (str(i) + '.txt')
                 text_file.parent.mkdir(parents=True, exist_ok=True)
                 text_file.write_text(
                     # 排序后方便翻译
                     '\n\n\n'.join(sorted(string_list)), encoding=enc
                 )
 
-                database.append(str(i))
+                # 注意：键是源码文件，值是文本文件的修改时间
+                database[str(i)] = text_file.stat().st_mtime
 
     database_file = extract_dir / 'database.json'
-    database_file.write_text(json.dumps(database))
+    database_file.write_text(json.dumps(database), encoding=enc)
+
+def update(config: ConfigParser) -> None:
+    enc = config.get(_CONST_MAIN, _CONST_ENCODING)
+    dir_ = config.get(_CONST_MAIN, _CONST_DIRECTORY)
+
+    work_dir = Path('.')
+    extract_dir = work_dir / dir_
+
+    database_file = extract_dir / 'database.json'
+    database: Dict[str, float]
+    database = json.loads(database_file.read_text())
+
+    for i in database:
+        text_file = extract_dir / (str(i) + '.txt')
+
+        database[i] = text_file.stat().st_mtime
+
+    database_file.write_text(json.dumps(database), encoding=enc)
 
 def inject(config: ConfigParser) -> None:
     enc = config.get(_CONST_MAIN, _CONST_ENCODING)
@@ -59,10 +78,18 @@ def inject(config: ConfigParser) -> None:
     cache_dir = extract_dir / _CONST_ASTRCACHE
 
     database_file = extract_dir / 'database.json'
+    database: Dict[str, float]
     database = json.loads(database_file.read_text())
 
-    for i in database:
+    for i, mtime in database.items():
         text_file = extract_dir / (str(i) + '.txt')
+        cache_file = cache_dir / (str(i) + '.json')
+
+        if text_file.stat().st_mtime <= mtime:
+            print(f'Unmodified file: {str(text_file)}')
+
+            continue  # 文件未更改
+
         text = text_file.read_text(encoding=enc)
 
         unmatched_list, dictionary = parse_dictionary(text)
@@ -73,8 +100,6 @@ def inject(config: ConfigParser) -> None:
             for u in unmatched_list:
                 print(f'    unmatched: {u}')
 
-        cache_file = cache_dir / (str(i) + '.json')
-
         text = _inject(json.loads(cache_file.read_text()), dictionary)
         Path(i).write_text(text, encoding=enc)
 
@@ -84,10 +109,7 @@ def execute(cmd: str, config: ConfigParser) -> None:
         extract(config)
     elif cmd in ('inject', 'i'):
         inject(config)
+    elif cmd in ('update', 'u'):
+        update(config)
     else:
-        print(
-            f'Unsupported command \'{cmd}\'\n' + \
-            '\n' + \
-            'Usage:\n' + \
-            '    astr <x|i|extract|inject>'
-        )
+        print(f'Unsupported command \'{cmd}\'')
