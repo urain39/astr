@@ -8,7 +8,7 @@ from .exceptions import ExtractorError
 _RE_STRING = re.compile(
     r'"((?:[^"\\]|\\[^ux]|\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2})*)"', re.MULTILINE)
 # 用于判断，这里的文本是全部匹配
-_RE_WHITESPACE = re.compile(r'^(\s+)$')
+_RE_WHITESPACE = re.compile(r'^(\s+)?$')
 _RE_ASCII = re.compile(r'^([\x00-\x7f]+)$')
 
 TYPE_DEFINE = 0
@@ -57,15 +57,18 @@ def extract(source: str) -> Tuple[List[str], List[Token]]:
         s = m.group(1)
         i = m.end(0)
 
-        if s \
-                and not _RE_WHITESPACE.match(s) \
-                and not _RE_ASCII.match(s):
+        # 过滤掉空白符和ASCII码
+        if _RE_WHITESPACE.match(s) or _RE_ASCII.match(s):
+            # 理论上字符串里不应该存在显式的换行符，
+            # 即使存在， 我们以转义的形式输出也不会出错。
+            tokens.append((TYPE_OTHERS, '"' + s + '"'))
+        else:
             if s not in string_map:  # 字符串第一次出现
                 string_map[s] = string_id
                 string_list.append(s)
                 string_id += 1
 
-            tokens.append((TYPE_REFERENCE, string_map[s]))
+                tokens.append((TYPE_REFERENCE, string_map[s]))
 
     if string_id:  # 如果有字符串
         tokens.insert(0, (TYPE_DEFINE, string_list))
