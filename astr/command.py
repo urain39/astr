@@ -51,8 +51,9 @@ def extract(config: ConfigParser) -> None:
                 # 注意：键是源码文件，值是文本文件的修改时间
                 database[str(i)] = text_file.stat().st_mtime
 
-    database_file = cache_dir / 'database.json'
-    database_file.write_text(json.dumps(database), encoding=enc)
+    if database:
+        database_file = cache_dir / 'database.json'
+        database_file.write_text(json.dumps(database), encoding=enc)
 
 
 def update(config: ConfigParser) -> None:

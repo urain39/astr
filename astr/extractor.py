@@ -68,7 +68,7 @@ def extract(source: str) -> Tuple[List[str], List[Token]]:
                 string_list.append(s)
                 string_id += 1
 
-                tokens.append((TYPE_REFERENCE, string_map[s]))
+            tokens.append((TYPE_REFERENCE, string_map[s]))
 
     if string_id:  # 如果有字符串
         tokens.insert(0, (TYPE_DEFINE, string_list))

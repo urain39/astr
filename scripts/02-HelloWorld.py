@@ -1,8 +1,0 @@
-print("Hello World!", end="")
-print("\n")
-print("Hello World!", end="")
-print("\n")
-print("Hello World!", end="")
-print("\n")
-print("Hello World!", end="")
-print("\n")
