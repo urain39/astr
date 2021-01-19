@@ -12,17 +12,18 @@ def inject(tokens: List[Token], dictionary: Dictionary) -> str:
     define_token = tokens[0]
 
     if define_token[0] != 0:
-        raise InjectorError('first token is not <type_define>')
+        raise InjectorError('First token is not <type_define>')
 
     string_list = cast(DefineToken, define_token)[1]
     tokens = tokens[1:]
 
+    # pylint: disable=unsubscriptable-object
     value: Union[int, str]
     for token in tokens:
         type_ = token[0]
 
         if type_ == 0:
-            raise InjectorError('unexpected token <type_define>')
+            raise InjectorError('Unexpected token <type_define>')
 
         if type_ == 1:
             value = cast(ReferenceToken, token)[1]

@@ -2,7 +2,7 @@ from typing import List, Tuple
 from .anotations import Dictionary
 
 
-def parse_dictionary(source: str) -> Tuple[List[str], Dictionary]:
+def parse_dictionary(source: str) -> Tuple[List[Tuple[int, str]], Dictionary]:
     dictionary = {}
     unmatched_list = []
     lines = source.split('\n')
@@ -19,13 +19,13 @@ def parse_dictionary(source: str) -> Tuple[List[str], Dictionary]:
             if i < l:
                 line = lines[i]
             else:
-                unmatched_list.append(key)
+                unmatched_list.append((i, key))
                 break
 
             if line:
                 dictionary[key] = line
             else:
-                unmatched_list.append(key)
+                unmatched_list.append((i, key))
 
         i += 1
 

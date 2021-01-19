@@ -3,6 +3,7 @@ import json
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Dict
+from .exceptions import ASTRError
 from .dictionary import parse_dictionary
 from .extractor import extract as _extract
 from .injector import inject as _inject
@@ -12,7 +13,9 @@ _CONST_INCLUDE = 'include'
 _CONST_ENCODING = 'encoding'
 _CONST_DIRECTORY = 'directory'
 _CONST_ASTRCACHE = '__astrcache__'
+_CONST_STRICT = 'strict'
 
+_STR_TO_BOOL = {'false': False, 'true': True}
 
 def extract(config: ConfigParser) -> None:
     inc = config.get(_CONST_MAIN, _CONST_INCLUDE)
@@ -48,7 +51,7 @@ def extract(config: ConfigParser) -> None:
                 # 注意：键是源码文件，值是文本文件的修改时间
                 database[str(i)] = text_file.stat().st_mtime
 
-    database_file = extract_dir / 'database.json'
+    database_file = cache_dir / 'database.json'
     database_file.write_text(json.dumps(database), encoding=enc)
 
 def update(config: ConfigParser) -> None:
@@ -57,8 +60,9 @@ def update(config: ConfigParser) -> None:
 
     work_dir = Path('.')
     extract_dir = work_dir / dir_
+    cache_dir = extract_dir / _CONST_ASTRCACHE
 
-    database_file = extract_dir / 'database.json'
+    database_file = cache_dir / 'database.json'
     database: Dict[str, float]
     database = json.loads(database_file.read_text())
 
@@ -69,15 +73,17 @@ def update(config: ConfigParser) -> None:
 
     database_file.write_text(json.dumps(database), encoding=enc)
 
+# pylint: disable=too-many-locals
 def inject(config: ConfigParser) -> None:
     enc = config.get(_CONST_MAIN, _CONST_ENCODING)
     dir_ = config.get(_CONST_MAIN, _CONST_DIRECTORY)
+    strict = _STR_TO_BOOL[config.get(_CONST_MAIN, _CONST_STRICT).lower()]
 
     work_dir = Path('.')
     extract_dir = work_dir / dir_
     cache_dir = extract_dir / _CONST_ASTRCACHE
 
-    database_file = extract_dir / 'database.json'
+    database_file = cache_dir / 'database.json'
     database: Dict[str, float]
     database = json.loads(database_file.read_text())
 
@@ -86,23 +92,27 @@ def inject(config: ConfigParser) -> None:
         cache_file = cache_dir / (str(i) + '.json')
 
         if text_file.stat().st_mtime <= mtime:
-            print(f'Unmodified file: {str(text_file)}')
-
-            continue  # 文件未更改
+            continue  # 跳过未更改文件
 
         text = text_file.read_text(encoding=enc)
 
         unmatched_list, dictionary = parse_dictionary(text)
 
         if unmatched_list:
+            if strict:
+                u = unmatched_list[0]
+
+                raise ASTRError(f'Untranslated string detected at {str(text_file)}:{u[0]}')
+
             print('WARNING: untranslated string detected!')
 
             for u in unmatched_list:
-                print(f'    unmatched: {u}')
+                print(f'    unmatched: {str(text_file)}:{u[0]}')
 
         text = _inject(json.loads(cache_file.read_text()), dictionary)
         Path(i).write_text(text, encoding=enc)
 
+    update(config)  # 注入后更新数据库
 
 def execute(cmd: str, config: ConfigParser) -> None:
     if cmd in ('x', 'extract'):

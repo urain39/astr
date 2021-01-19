@@ -8,6 +8,8 @@ from typing import Dict, List, Tuple, Union
 DefineToken = Tuple[int, List[str]]
 ReferenceToken = Tuple[int, int]
 NormalToken = Tuple[int, str]
+# 好像是pylint的bug，暂时忽略
+# pylint: disable=unsubscriptable-object
 Token = Union[DefineToken, ReferenceToken, NormalToken]
 
 Dictionary = Dict[str, str]
