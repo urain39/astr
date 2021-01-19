@@ -22,9 +22,6 @@ def extract(source: str) -> Tuple[List[str], List[Token]]:
     string_map: Dict[str, int] = {}  # [string] -> string_id
     string_list: List[str] = []  # [string_id] -> string
 
-    # 转义换行符（Python3会处理换行符兼容性问题的）
-    source = source.replace('\n', '\\n')
-
     s = ''
     i = 0  # 当前
     j = 0  # 预查
@@ -59,8 +56,6 @@ def extract(source: str) -> Tuple[List[str], List[Token]]:
 
         # 过滤掉空白符和ASCII码
         if _RE_WHITESPACE.match(s) or _RE_ASCII.match(s):
-            # 理论上字符串里不应该存在显式的换行符，
-            # 即使存在， 我们以转义的形式输出也不会出错。
             tokens.append((TYPE_OTHERS, '"' + s + '"'))
         else:
             if s not in string_map:  # 字符串第一次出现

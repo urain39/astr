@@ -48,4 +48,4 @@ def inject(tokens: List[Token], dictionary: Dictionary, strict: bool = False) ->
         else:
             raise InjectorError('Invalid token type')
 
-    return ''.join(buffer).replace('\\n', '\n')
+    return ''.join(buffer)
