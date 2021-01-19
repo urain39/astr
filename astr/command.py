@@ -113,7 +113,7 @@ def inject(config: ConfigParser) -> None:
             for u in unmatched_list:
                 print(f'    unmatched: {str(text_file)}:{u[0]}')
 
-        text = _inject(json.loads(cache_file.read_text()), dictionary)
+        text = _inject(json.loads(cache_file.read_text()), dictionary, strict=strict)
         Path(i).write_text(text, encoding=enc)
 
     update(config)  # 注入后更新数据库

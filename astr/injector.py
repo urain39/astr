@@ -1,9 +1,10 @@
 from typing import List, Union, cast
 from .anotations import Dictionary, Token, DefineToken, ReferenceToken, NormalToken
 from .exceptions import InjectorError
+from .extractor import TYPE_DEFINE, TYPE_REFERENCE, TYPE_OTHERS
 
 
-def inject(tokens: List[Token], dictionary: Dictionary) -> str:
+def inject(tokens: List[Token], dictionary: Dictionary, strict: bool = False) -> str:
     buffer: List[str] = []
 
     if not tokens:
@@ -11,7 +12,7 @@ def inject(tokens: List[Token], dictionary: Dictionary) -> str:
 
     define_token = tokens[0]
 
-    if define_token[0] != 0:
+    if define_token[0] != TYPE_DEFINE:
         raise InjectorError('First token is not <type_define>')
 
     string_list = cast(DefineToken, define_token)[1]
@@ -22,14 +23,26 @@ def inject(tokens: List[Token], dictionary: Dictionary) -> str:
     for token in tokens:
         type_ = token[0]
 
-        if type_ == 0:
+        if type_ == TYPE_DEFINE:
             raise InjectorError('Unexpected token <type_define>')
 
-        if type_ == 1:
+        if type_ == TYPE_REFERENCE:
             value = cast(ReferenceToken, token)[1]
             string = string_list[value]
-            buffer.append('"' + (dictionary.get(string) or string) + '"')
-        elif type_ == 2:
+
+            translated = dictionary.get(string)
+
+            if not translated:
+                if strict:
+                    raise InjectorError(
+                        f'Cannot find "{string}" in dictionary')
+
+                print(f'WARNING: cannot find "{string}" in dictionary')
+
+                translated = string
+
+            buffer.append('"' + translated + '"')
+        elif type_ == TYPE_OTHERS:
             value = cast(NormalToken, token)[1]
             buffer.append(value)
         else:
