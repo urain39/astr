@@ -105,11 +105,11 @@ def inject(config: ConfigParser) -> None:
 
 
 def execute(cmd: str, config: ConfigParser) -> None:
-    if cmd in ('extract', 'x'):
+    if cmd in ('x', 'extract'):
         extract(config)
-    elif cmd in ('inject', 'i'):
+    elif cmd in ('i', 'inject'):
         inject(config)
-    elif cmd in ('update', 'u'):
+    elif cmd in ('u', 'update'):
         update(config)
     else:
         print(f'Unsupported command \'{cmd}\'')
