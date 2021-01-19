@@ -17,6 +17,7 @@ _CONST_STRICT = 'strict'
 
 _STR_TO_BOOL = {'false': False, 'true': True}
 
+
 def extract(config: ConfigParser) -> None:
     inc = config.get(_CONST_MAIN, _CONST_INCLUDE)
     enc = config.get(_CONST_MAIN, _CONST_ENCODING)
@@ -44,8 +45,7 @@ def extract(config: ConfigParser) -> None:
 
                 text_file.parent.mkdir(parents=True, exist_ok=True)
                 text_file.write_text(
-                    # 排序后方便翻译
-                    '\n\n\n'.join(sorted(string_list)), encoding=enc
+                    '\n\n\n'.join(string_list), encoding=enc
                 )
 
                 # 注意：键是源码文件，值是文本文件的修改时间
@@ -53,6 +53,7 @@ def extract(config: ConfigParser) -> None:
 
     database_file = cache_dir / 'database.json'
     database_file.write_text(json.dumps(database), encoding=enc)
+
 
 def update(config: ConfigParser) -> None:
     enc = config.get(_CONST_MAIN, _CONST_ENCODING)
@@ -74,6 +75,8 @@ def update(config: ConfigParser) -> None:
     database_file.write_text(json.dumps(database), encoding=enc)
 
 # pylint: disable=too-many-locals
+
+
 def inject(config: ConfigParser) -> None:
     enc = config.get(_CONST_MAIN, _CONST_ENCODING)
     dir_ = config.get(_CONST_MAIN, _CONST_DIRECTORY)
@@ -102,7 +105,8 @@ def inject(config: ConfigParser) -> None:
             if strict:
                 u = unmatched_list[0]
 
-                raise ASTRError(f'Untranslated string detected at {str(text_file)}:{u[0]}')
+                raise ASTRError(
+                    f'Untranslated string detected at {str(text_file)}:{u[0]}')
 
             print('WARNING: untranslated string detected!')
 
@@ -113,6 +117,7 @@ def inject(config: ConfigParser) -> None:
         Path(i).write_text(text, encoding=enc)
 
     update(config)  # 注入后更新数据库
+
 
 def execute(cmd: str, config: ConfigParser) -> None:
     if cmd in ('x', 'extract'):
