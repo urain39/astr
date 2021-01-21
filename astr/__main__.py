@@ -4,7 +4,7 @@ from configparser import ConfigParser
 from .command import execute
 
 
-if __name__ == '__main__':
+def main() -> None:
     argv = sys.argv
     argc = len(argv)
 
@@ -22,3 +22,10 @@ if __name__ == '__main__':
             '\n' +
             'NOTE: do NOT use "u, update", if you don\'t understand'
         )
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        print(str(e))
