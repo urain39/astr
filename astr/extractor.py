@@ -1,7 +1,7 @@
 import re
 
 from typing import Dict, List, Tuple
-from .anotations import Token
+from .annotations import Token
 from .exceptions import ExtractorError
 
 # 用于提取，组1是匹配到的文本，支持“\uUUUU”，“\xXX”

@@ -1,5 +1,5 @@
 from typing import List, Union, cast
-from .anotations import Dictionary, Token, DefineToken, ReferenceToken, NormalToken
+from .annotations import Dictionary, Token, DefineToken, ReferenceToken, NormalToken
 from .exceptions import InjectorError
 from .extractor import TYPE_DEFINE, TYPE_REFERENCE, TYPE_OTHERS
 

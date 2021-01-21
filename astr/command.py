@@ -75,10 +75,9 @@ def update(config: ConfigParser) -> None:
 
     database_file.write_text(json.dumps(database), encoding=enc)
 
-# pylint: disable=too-many-locals
-
 
 def inject(config: ConfigParser) -> None:
+    # pylint: disable=too-many-locals
     enc = config.get(_CONST_MAIN, _CONST_ENCODING)
     dir_ = config.get(_CONST_MAIN, _CONST_DIRECTORY)
     strict = _STR_TO_BOOL[config.get(_CONST_MAIN, _CONST_STRICT).lower()]
@@ -114,7 +113,8 @@ def inject(config: ConfigParser) -> None:
             for u in unmatched_list:
                 print(f'    unmatched: {str(text_file)}:{u[0]}')
 
-        text = _inject(json.loads(cache_file.read_text()), dictionary, strict=strict)
+        text = _inject(json.loads(cache_file.read_text()),
+                       dictionary, strict=strict)
         Path(i).write_text(text, encoding=enc)
 
     update(config)  # 注入后更新数据库

@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from .anotations import Dictionary
+from .annotations import Dictionary
 
 
 def parse_dictionary(source: str) -> Tuple[List[Tuple[int, str]], Dictionary]:
