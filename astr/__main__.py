@@ -1,6 +1,7 @@
 import sys
 
 from configparser import ConfigParser
+from pathlib import Path
 from .command import execute
 
 
@@ -12,10 +13,10 @@ def main() -> None:
         cfg = ConfigParser()
         cfg.read('astr.ini', encoding='utf-8')
 
-        execute(sys.argv[1], cfg)
+        execute(argv[1], cfg)
     else:
         print(
-            'Usage: python -m astr <x|extract|i|inject|u|update>\n' +
+            f'Usage: {Path(argv[0]).name} <x|extract|i|inject|u|update>\n' +
             '    x, extract   extract strings from source\n' +
             '    i, inject    inject translated strings to source\n' +
             '    u, update    update modified time in database\n' +
@@ -25,7 +26,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        print(str(e))
+    main()
