@@ -1,3 +1,5 @@
+import time
+
 from configparser import ConfigParser
 from random import choice
 from astr.command import execute
@@ -6,7 +8,7 @@ from astr.command import execute
 def _GET_FAREWELL() -> str: return choice([  # pylint: disable=invalid-name,multiple-statements
     '再见！', '感谢使用！', '感谢支持！', '欢迎下次使用！',
     'astr 会记住上次修改时间哦！', 'astr 只会注入文本被翻译过后的源码哦！',
-    'astr 目前仍在测试阶段。', 'astr 导出的文本是唯一（去重后）的！'
+    'astr 目前仍在测试阶段。', 'astr 导出的文本是唯一（去重后）的！',
     '偷偷告诉你，这个是内用版本哦！', '请勿外传！',
     '如有疑问请反馈到：https://github.com/urain39/astr-archives。',
     '这里有一些与 astr 相关的小工具哦！https://github.com/urain39/astr-archives'
@@ -60,3 +62,4 @@ if __name__ == '__main__':
         pass
 
     print(_GET_FAREWELL())
+    time.sleep(3)
