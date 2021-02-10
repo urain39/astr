@@ -1,5 +1,3 @@
-import time
-
 from configparser import ConfigParser
 from random import choice
 from astr.command import execute
@@ -59,6 +57,7 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         pass
+    except EOFError:
+        pass
 
     print(_GET_FAREWELL())
-    time.sleep(3)
