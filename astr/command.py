@@ -51,9 +51,9 @@ def extract(config: ConfigParser) -> None:
                 # 注意：键是源码文件，值是文本文件的修改时间
                 database[str(i)] = text_file.stat().st_mtime
 
-    if database:
-        print(f'LOG: Extracted {i}')
+                print(f'LOG: Extracted {i}')
 
+    if database:
         database_file = cache_dir / 'database.json'
         database_file.write_text(json.dumps(database), encoding=enc)
 

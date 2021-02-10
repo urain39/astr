@@ -24,7 +24,7 @@ def main() -> None:
 
         if cmd in ('r', 'reload'):
             cfg.read('astr.ini', encoding='utf-8')
-            print("已重载配置文件。")
+            print('已重载配置文件。')
 
             continue
 
