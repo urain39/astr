@@ -52,6 +52,8 @@ def extract(config: ConfigParser) -> None:
                 database[str(i)] = text_file.stat().st_mtime
 
     if database:
+        print(f'LOG: Extracted {i}')
+
         database_file = cache_dir / 'database.json'
         database_file.write_text(json.dumps(database), encoding=enc)
 
@@ -75,6 +77,8 @@ def update(config: ConfigParser) -> None:
 
     database_file.write_text(json.dumps(database), encoding=enc)
 
+    print(f'LOG: Updated {database_file}')
+
 
 def inject(config: ConfigParser) -> None:
     # pylint: disable=too-many-locals
@@ -89,6 +93,8 @@ def inject(config: ConfigParser) -> None:
     database_file = cache_dir / 'database.json'
     database: Dict[str, float]
     database = json.loads(database_file.read_text())
+
+    need_update = False
 
     for i, mtime in database.items():
         text_file = extract_dir / (str(i) + '.txt')
@@ -116,8 +122,12 @@ def inject(config: ConfigParser) -> None:
         text = _inject(json.loads(cache_file.read_text()),
                        dictionary, strict=strict)
         Path(i).write_text(text, encoding=enc)
+        need_update = True
 
-    update(config)  # 注入后更新数据库
+        print(f'LOG: Injected {i}')
+
+    if need_update:
+        update(config)  # 注入后更新数据库
 
 
 def execute(cmd: str, config: ConfigParser) -> None:
