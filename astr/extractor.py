@@ -6,7 +6,6 @@ from .annotations import Token
 from .exceptions import ExtractorError
 
 
-
 # 用于提取，组1是匹配到的文本，支持“\uUUUU”，“\xXX”
 _STR_RE_STRING = r'"((?:[^"\\]|\\[^ux]|\\u[\dA-Fa-f]{4}|\\x[\dA-Fa-f]{2})*)"'
 
