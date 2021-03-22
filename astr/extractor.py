@@ -44,8 +44,7 @@ def extract(source: str) -> Tuple[List[str], List[Token]]:
 
         if type_ == 's':
             raw = matched.group(0)
-            # pylint: disable=eval-used
-            text = eval(raw)
+            text = matched.group(1)
 
             if _RE_WHITESPACE.match(text) or _RE_ASCII.match(text):
                 tokens.append((TYPE_OTHERS, raw))
