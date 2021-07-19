@@ -12,6 +12,8 @@ _RE_OTHERS = re.compile(r'[^\'\"]+')
 # 用于判断，这里的文本是全部匹配
 _RE_WHITESPACE = re.compile(r'^(\s+)?$')
 _RE_ASCII = re.compile(r'^([\x00-\x7f]+)$')
+# 修复引号转义问题
+_RE_QUOTES = re.compile(r'([\'\"])')
 
 TYPE_DEFINE = 0
 TYPE_REFERENCE = 1
@@ -49,6 +51,8 @@ def extract(source: str) -> Tuple[List[str], List[Token]]:
             if _RE_WHITESPACE.match(text) or _RE_ASCII.match(text):
                 tokens.append((TYPE_OTHERS, raw))
             else:
+                text = _RE_QUOTES.sub(r'\\\1', text)
+
                 if text not in string_map:
                     string_map[text] = string_id
                     string_list.append(text)
