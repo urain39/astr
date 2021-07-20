@@ -12,7 +12,7 @@ def parse_dictionary(source: str) -> Tuple[List[Tuple[int, str]], Dictionary]:
     while i < l:
         line = lines[i]
 
-        if line:
+        if line and line[0] != '"':
             key = line
             i += 1
 
